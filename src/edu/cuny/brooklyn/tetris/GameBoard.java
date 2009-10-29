@@ -29,6 +29,7 @@ public class GameBoard extends JPanel implements Runnable, ActionListener, KeyLi
     private int velocity = +1;
     private final Shape[] shapes_;
     private Shape currentShape_;
+    private Color currentColor_;
 
     public GameBoard() {
         frame_ = new JFrame("Tetris");
@@ -46,11 +47,19 @@ public class GameBoard extends JPanel implements Runnable, ActionListener, KeyLi
                                Shape.createZigZagShape(CELL_SIZE),
                                Shape.createSquareShape(CELL_SIZE) };
         randomizeCurrentShape();
+        randomizeCurrentColor();
     }
     
     private void randomizeCurrentShape()
     {
         currentShape_ = shapes_[random_.nextInt(shapes_.length)];
+    }
+
+    private void randomizeCurrentColor()
+    {
+        currentColor_ = new Color(random_.nextInt(256),
+                                  random_.nextInt(256),
+                                  random_.nextInt(256));
     }
 
     public void run() {
@@ -71,7 +80,7 @@ public class GameBoard extends JPanel implements Runnable, ActionListener, KeyLi
     } 
     public void paintComponent(Graphics g) {
         g.clearRect(0,0,getWidth(),getHeight());
-        g.setColor(Color.RED);
+        g.setColor(currentColor_);
         currentShape_.draw(g,xPosition,yPosition);
     }
 
