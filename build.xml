@@ -6,8 +6,7 @@
   <property name="build" location="build"/>
   <property name="dist" location="dist"/>
 
-  <target name="init">
-    <tstamp />
+  <target name="init" depends="clean">
     <mkdir dir="${build}"/>
     <mkdir dir="${dist}"/>
   </target>
@@ -17,7 +16,7 @@
   </target>
 
   <target name="dist" depends="compile">
-    <jar jarfile="${dist}/${ant.project.name}-${DSTAMP}.jar" basedir="${build}">
+    <jar jarfile="${dist}/${ant.project.name}.jar" basedir="${build}">
         <manifest>
             <attribute name="Main-Class" value="edu.cuny.brooklyn.tetris.Tetris"/>
         </manifest>
@@ -25,13 +24,14 @@
   </target>
   
   <target name="run" depends="dist" description="Runs executable jar file.">
-        <java jar="${dist}/${ant.project.name}-${DSTAMP}.jar" fork="true"/>
+        <java jar="${dist}/${ant.project.name}.jar" fork="true"/>
   </target>
 
 
 
   <target name="clean">
     <delete dir="${build}"/>
+    <delete dir="${dist}"/>
   </target>
 
 </project>
