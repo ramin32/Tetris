@@ -17,8 +17,6 @@
   </target>
 
   <target name="dist" depends="compile">
-    <mkdir dir="${dist}"/>
-
     <jar jarfile="${dist}/${ant.project.name}-${DSTAMP}.jar" basedir="${build}">
         <manifest>
             <attribute name="Main-Class" value="edu.cuny.brooklyn.tetris.Tetris"/>
@@ -32,8 +30,7 @@
 
 
 
-  <target name="clean"
-        description="clean up" >
+  <target name="clean">
     <delete dir="${build}"/>
   </target>
 

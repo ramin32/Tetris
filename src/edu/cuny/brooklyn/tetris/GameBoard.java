@@ -10,18 +10,33 @@ import java.awt.event.ActionEvent;
 import javax.swing.Timer;
 import javax.swing.SwingUtilities;
 
+import edu.cuny.brooklyn.tetris.shape.*;
+
 public class GameBoard extends JPanel implements Runnable, ActionListener {
+    private static final int ANIMATION_RATE = 5;
+    private static final int CELL_SIZE = 10;
+    private static final int X_CELLS = 50;
+    private static final int Y_CELLS = 100;
+
+
     private final JFrame frame_;
     private final Timer timer_;
-    private int x = 0;
+    private int yPosition = 0;
     private int velocity = +1;
+    private final Shape[] shapes_;
 
     public GameBoard() {
         frame_ = new JFrame("Tetris");
         frame_.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        setPreferredSize(new Dimension(500,500));
-        timer_ = new Timer(5,this);
+        setPreferredSize(new Dimension(CELL_SIZE*X_CELLS, CELL_SIZE*Y_CELLS));
+        timer_ = new Timer(ANIMATION_RATE,this);
+
+        shapes_ = new Shape[]{ new TShape(CELL_SIZE),
+                               new LShape(CELL_SIZE),
+                               new SquareShape(CELL_SIZE),
+                               new LineShape(CELL_SIZE),
+                               new ZigZagShape(CELL_SIZE) };
 
     }
     public void run() {
@@ -34,15 +49,16 @@ public class GameBoard extends JPanel implements Runnable, ActionListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-        if (x < 0 || x > 490) {
+        if (yPosition < 0 || yPosition > getHeight()) {
             velocity *= -1; 
         }
-        x += velocity;
+        yPosition += velocity;
         repaint();
     } 
     public void paintComponent(Graphics g) {
         g.clearRect(0,0,getWidth(),getHeight());
         g.setColor(Color.RED);
-        g.fillRect(getWidth()/2,x,10,10);
+        for(int i = 0; i < shapes_.length; i++)
+            shapes_[i].draw(g,i*getWidth()/shapes_.length,yPosition);
     }
 }
