@@ -16,8 +16,8 @@ import java.util.Random;
 public class GameBoard extends JPanel implements Runnable, ActionListener, KeyListener {
     private static final int ANIMATION_RATE = 5;
     private static final int CELL_SIZE = 10;
-    private static final int X_CELLS = 50;
-    private static final int Y_CELLS = 100;
+    private static final int X_CELLS = 20;
+    private static final int Y_CELLS = 30;
     private static final int BOARD_WIDTH = X_CELLS * CELL_SIZE;
     private static final int BOARD_HEIGHT = Y_CELLS * CELL_SIZE;
     private static final Random random_ = new Random(System.currentTimeMillis());
@@ -72,7 +72,7 @@ public class GameBoard extends JPanel implements Runnable, ActionListener, KeyLi
     }
 
     public void actionPerformed(ActionEvent e) {
-        if (yPosition < 0 || yPosition > getHeight()-currentShape_.getHeight()) {
+        if (yPosition < 0 || yPosition > (getHeight()-currentShape_.getHeight())) {
             velocity *= -1; 
         }
         yPosition += velocity;
@@ -86,10 +86,19 @@ public class GameBoard extends JPanel implements Runnable, ActionListener, KeyLi
 
     public void keyPressed(KeyEvent e)
     {	
-        if(e.getKeyCode() == KeyEvent.VK_LEFT)
+        if(e.getKeyCode() == KeyEvent.VK_LEFT &&
+                xPosition > 0) 
             xPosition -= CELL_SIZE;
-        else if(e.getKeyCode() == KeyEvent.VK_RIGHT)
+        else if(e.getKeyCode() == KeyEvent.VK_RIGHT && 
+                xPosition <= (getWidth() - currentShape_.getWidth()*2)) 
             xPosition += CELL_SIZE;
+        else if(e.getKeyCode() == KeyEvent.VK_UP)
+            currentShape_.rotate();
+        else if(e.getKeyCode() == KeyEvent.VK_DOWN)
+        {
+            randomizeCurrentShape();
+            randomizeCurrentColor();
+        }
 
     }
     public void keyReleased(KeyEvent e){}

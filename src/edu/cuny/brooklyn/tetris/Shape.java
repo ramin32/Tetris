@@ -5,6 +5,7 @@ import java.awt.Point;
 
 public class Shape 
 {
+    public static final int SHAPE_GRID_SIZE = 4;
     public static final Point[] LINE_SHAPE_POINTS = { new Point(0,0),
                                                       new Point(1,0),
                                                       new Point(2,0),
@@ -68,7 +69,7 @@ public class Shape
         int width = 0;
         for(Point p: shapePoints_)
             width = Math.max(width,p.x);
-        return width;
+        return cellSize_ * width;
     }
 
     public int getHeight()
@@ -76,12 +77,19 @@ public class Shape
         int height = 0;
         for(Point p: shapePoints_)
             height = Math.max(height,p.y);
-        return height;
+        return cellSize_ * height;
     }
 
     public void draw(Graphics g, int x, int y)
     {
         for(Point p: shapePoints_)
             g.fillRect(x+p.x*cellSize_+1,y+p.y*cellSize_+1,cellSize_-2,cellSize_-2);
+    }
+
+    public void rotate()
+    {
+        for(int i = 0; i < SHAPE_GRID_SIZE; i++)
+            shapePoints_[i] = new Point(shapePoints_[i].y,
+                                        SHAPE_GRID_SIZE - 1 - shapePoints_[i].x);
     }
 }
