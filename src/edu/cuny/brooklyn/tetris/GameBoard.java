@@ -28,9 +28,11 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
     private final Timer timer_;
     private int xPosition = X_CELLS/2;
     private int yPosition = 0;
-    private int velocity = +1;
+    private int velocity = 1;
     private Shape currentShape_;
     private final ColoredCellGrid cellGrid_;
+
+    private List<ColoredCell> previousCellList_;
 
     public GameBoard()
     {
@@ -66,18 +68,30 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
             int x = p.x + xPosition;
             int y = p.y + yPosition;
 
-            cells.add(new ColoredCell(x,y,currentShape_.getColor()));
+            ColoredCell cell = new ColoredCell(x,y,currentShape_.getColor());
+            if(cellGrid_.contains(cell) && previousCellList_ != null) {
+                System.out.println("Colision!");
+                cellGrid_.addPermenantCells(previousCellList_);
+                refreshState();
+            }
+
+            cells.add(cell);
         }
+        previousCellList_ = cells;
         cellGrid_.addTemporaryCells(cells);
         cellGrid_.repaint();
 
         if(yPosition >= Y_CELLS - currentShape_.getHeight()*2)
         {
             cellGrid_.addPermenantCells(cells);
-            yPosition = 0;
-            currentShape_ = Shape.randomShape();
+            refreshState();
         }
     } 
+
+    private void refreshState() {
+        yPosition = 0;
+        currentShape_ = Shape.randomShape();
+    }
 
     public void keyPressed(KeyEvent e)
     {	
@@ -89,11 +103,17 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
             xPosition += 1;
         else if(e.getKeyCode() == KeyEvent.VK_UP)
             currentShape_.rotate();
-        else if(e.getKeyCode() == KeyEvent.VK_DOWN)
-        {
+        else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+            velocity = 2;
         }
 
+
     }
-    public void keyReleased(KeyEvent e){}
+    public void keyReleased(KeyEvent e)
+    {
+       if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+            velocity = 1;
+        }
+    }
     public void keyTyped(KeyEvent e){}
 }

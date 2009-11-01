@@ -3,6 +3,7 @@ package edu.cuny.brooklyn.tetris.cell;
 import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Color;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -30,6 +31,11 @@ public class ColoredCellGrid extends JPanel
     {
         permenantCells_.addAll(cells);
     }
+    public boolean contains(ColoredCell cell) 
+    {
+        return permenantCells_.contains(cell);
+    }
+
     public void addTemporaryCells(List<ColoredCell> cells)
     {
         temporaryCells_.addAll(cells);
@@ -64,7 +70,13 @@ public class ColoredCellGrid extends JPanel
 
     public void drawCell(Graphics g, int x, int y)
     {
-        g.fillRect(x * getCellWidth() + 1,
+        g.fillRect(x * getCellWidth() + 2,
+                   y * getCellHeight() + 2,
+                   getCellWidth() - 4,
+                   getCellHeight() - 4);
+
+        g.setColor(Color.BLACK);
+        g.drawRect(x * getCellWidth() + 1,
                    y * getCellHeight() + 1,
                    getCellWidth() - 2,
                    getCellHeight() - 2);

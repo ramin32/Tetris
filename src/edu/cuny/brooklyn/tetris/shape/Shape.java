@@ -64,8 +64,20 @@ public class Shape
 
     public void rotate()
     {
-        for(int i = 0; i < SHAPE_GRID_SIZE; i++)
-            points_[i] = new Point(points_[i].y,
-                                        SHAPE_GRID_SIZE - 1 - points_[i].x);
+        int minX = SHAPE_GRID_SIZE;
+        int minY = SHAPE_GRID_SIZE;
+        for(Point p: points_) {
+            p.move(p.y, SHAPE_GRID_SIZE - 1 - p.x);
+            minX = Math.min(minX,p.x);
+            minY = Math.min(minY,p.y);
+        }
+
+        // Normalize
+        for(Point p: points_) {
+                p.x = p.x-minX;
+                p.y = p.y-minY;
+        }
     }
+
+
 }

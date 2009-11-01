@@ -37,7 +37,6 @@ public class ColoredCell {
             return false;
         ColoredCell other = (ColoredCell) o;
         return (x_ == other.x_) &&
-               (y_ == other.y_) &&
-               (color_ == other.color_);
+               (y_ == other.y_);
     }
 }
