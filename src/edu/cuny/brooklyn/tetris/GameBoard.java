@@ -53,29 +53,30 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
         frame_.setVisible(true);
 
         timer_.start();
-
     }
 
 
     public void actionPerformed(ActionEvent e)
     {
-        if(yPosition >= Y_CELLS - currentShape_.getHeight())
-        {
-            yPosition = 0;
-            currentShape_ = Shape.randomShape();
-        }
-        else
-            yPosition += velocity;
+        yPosition += velocity;
 
         List<ColoredCell> cells = new ArrayList<ColoredCell>();
         for(Point p: currentShape_.getPoints())
         {
             int x = p.x + xPosition;
             int y = p.y + yPosition;
+
             cells.add(new ColoredCell(x,y,currentShape_.getColor()));
         }
         cellGrid_.addTemporaryCells(cells);
         cellGrid_.repaint();
+
+        if(yPosition >= Y_CELLS - currentShape_.getHeight()*2)
+        {
+            cellGrid_.addPermenantCells(cells);
+            yPosition = 0;
+            currentShape_ = Shape.randomShape();
+        }
     } 
 
     public void keyPressed(KeyEvent e)
