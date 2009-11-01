@@ -20,7 +20,6 @@ public class Shape
     {
         points_ = points;
         color_ = color;
-        int x = 5;
     }
 
     public static Shape randomShape() 
@@ -41,7 +40,7 @@ public class Shape
         int width = 0;
         for(Point p: points_)
             width = Math.max(width,p.x);
-        return width;
+        return width + 1;
     }
 
     public int getHeight()
@@ -49,7 +48,7 @@ public class Shape
         int height = 0;
         for(Point p: points_)
             height = Math.max(height,p.y);
-        return  height;
+        return  height + 1;
     }
 
     public Point[] getPoints()
