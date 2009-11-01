@@ -17,18 +17,19 @@ import java.awt.Point;
 import edu.cuny.brooklyn.tetris.shape.Shape;
 import edu.cuny.brooklyn.tetris.cell.ColoredCellGrid;
 import edu.cuny.brooklyn.tetris.cell.ColoredCell;
+import javax.swing.JOptionPane;
 
 public class GameBoard implements Runnable, ActionListener, KeyListener 
 {
     private static final int ANIMATION_RATE = 150;
-    private static final int X_CELLS = 20;
-    private static final int Y_CELLS = 30;
+    private static final int X_CELLS = 15;
+    private static final int Y_CELLS = 20;
 
     private final JFrame frame_;
     private final Timer timer_;
     private int xPosition;
     private int yPosition;
-    private final int velocity = 1;
+    private int velocity = 1;
     private Shape currentShape_;
     private ColoredCellGrid cellGrid_;
 
@@ -81,6 +82,13 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
 
             ColoredCell cell = new ColoredCell(x,y,currentShape_.getColor());
             if(cellGrid_.contains(cell) && previousCellList_ != null) {
+                if(cell.getY() <= Shape.SHAPE_GRID_SIZE)
+                {
+                    JOptionPane.showMessageDialog(null,"Nice Try!");
+                    resetGame();
+                    return;
+
+                }
                 cellGrid_.addPermenantCells(previousCellList_);
                 refreshState();
                 cellGrid_.repaint();
@@ -104,17 +112,26 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
     public void keyPressed(KeyEvent e)
     {	
         if(e.getKeyCode() == KeyEvent.VK_LEFT &&
-                xPosition > 0) 
+                xPosition > 0) {
             xPosition -= 1;
+            velocity = 0;
+        }
         else if(e.getKeyCode() == KeyEvent.VK_RIGHT && 
-                xPosition < X_CELLS - currentShape_.getWidth()) 
+                xPosition < X_CELLS - currentShape_.getWidth()) {
             xPosition += 1;
+            velocity = 0;
+        }
         else if(e.getKeyCode() == KeyEvent.VK_UP)
             currentShape_.rotate();
         else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
             actionPerformed(null);
         }
     }
-    public void keyReleased(KeyEvent e){}
+    public void keyReleased(KeyEvent e)
+    {
+        if(e.getKeyCode() == KeyEvent.VK_LEFT || 
+                e.getKeyCode() == KeyEvent.VK_RIGHT)
+            velocity = 1;
+    }
     public void keyTyped(KeyEvent e){}
 }

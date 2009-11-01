@@ -6,13 +6,14 @@ import java.awt.Graphics;
 import java.awt.Color;
 import java.util.List;
 import java.util.ArrayList;
+import java.lang.IllegalArgumentException;
 
 public class ColoredCellGrid extends JPanel 
 {
     private List<ColoredCell> permenantCells_;
     private List<ColoredCell> temporaryCells_;
     private final int[] horizontalLines_;
-    private int CELL_WIDTH = 10;
+    private int CELL_WIDTH = 15;
 
     private final int xCells_;
     private final int yCells_;
@@ -45,10 +46,11 @@ public class ColoredCellGrid extends JPanel
     public void addPermenantCell(ColoredCell cell)
     {
         horizontalLines_[cell.getY()]++;
-        if(horizontalLines_[cell.getY()] < xCells_-1)
+        if(horizontalLines_[cell.getY()] < xCells_)
             permenantCells_.add(cell);
         else
         {
+           horizontalLines_[cell.getY()] = 0;
            for(int i = 0; i < permenantCells_.size(); i++)
            {
                ColoredCell tempCell = permenantCells_.get(i);
@@ -59,9 +61,12 @@ public class ColoredCellGrid extends JPanel
            {
                ColoredCell tempCell = permenantCells_.get(i);
                if(tempCell.getY() < cell.getY())
-                   tempCell.setY(tempCell.getY()+1);
+               {
+                  permenantCells_.remove(i);
+                  tempCell.setY(tempCell.getY() + 1);
+                  permenantCells_.add(tempCell);
+               }
            }
-           horizontalLines_[cell.getY()] = 0;
         }
 
     }
