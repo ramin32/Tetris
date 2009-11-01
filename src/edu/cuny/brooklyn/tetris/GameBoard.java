@@ -20,17 +20,17 @@ import edu.cuny.brooklyn.tetris.cell.ColoredCell;
 
 public class GameBoard implements Runnable, ActionListener, KeyListener 
 {
-    private static final int ANIMATION_RATE = 100;
+    private static final int ANIMATION_RATE = 150;
     private static final int X_CELLS = 20;
     private static final int Y_CELLS = 30;
 
     private final JFrame frame_;
     private final Timer timer_;
-    private int xPosition = X_CELLS/2;
-    private int yPosition = 0;
-    private int velocity = 1;
+    private int xPosition;
+    private int yPosition;
+    private final int velocity = 1;
     private Shape currentShape_;
-    private final ColoredCellGrid cellGrid_;
+    private ColoredCellGrid cellGrid_;
 
     private List<ColoredCell> previousCellList_;
 
@@ -40,17 +40,23 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
         frame_.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame_.setFocusable(true);
         frame_.addKeyListener(this);
-
-        timer_ = new Timer(ANIMATION_RATE,this);
+        frame_.setJMenuBar(new TetrisMenu(this));
 
         cellGrid_ = new ColoredCellGrid(X_CELLS, Y_CELLS);
-        refreshState();
+        timer_ = new Timer(ANIMATION_RATE,this);
+        resetGame();
+
     }
 
+    final public void resetGame()
+    {
+        cellGrid_.clearAll();
+        refreshState();
+    }
     final private void refreshState() {
-        yPosition = 0;
-        xPosition = X_CELLS/2;
         currentShape_ = Shape.randomShape();
+        yPosition = 0;
+        xPosition = X_CELLS/2 - currentShape_.getWidth()/2;
     }
 
     public void run()
@@ -109,11 +115,6 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
             actionPerformed(null);
         }
     }
-    public void keyReleased(KeyEvent e)
-    {
-       if(e.getKeyCode() == KeyEvent.VK_DOWN) {
-            velocity = 1;
-        }
-    }
+    public void keyReleased(KeyEvent e){}
     public void keyTyped(KeyEvent e){}
 }

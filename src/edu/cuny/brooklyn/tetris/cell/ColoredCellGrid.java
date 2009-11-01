@@ -11,6 +11,7 @@ public class ColoredCellGrid extends JPanel
 {
     private List<ColoredCell> permenantCells_;
     private List<ColoredCell> temporaryCells_;
+    private final int[] horizontalLines_;
     private int CELL_WIDTH = 10;
 
     private final int xCells_;
@@ -20,6 +21,8 @@ public class ColoredCellGrid extends JPanel
     {
         permenantCells_ = new ArrayList<ColoredCell>();
         temporaryCells_ = new ArrayList<ColoredCell>();
+        horizontalLines_ = new int[yCells];
+
         xCells_ = xCells;
         yCells_ = yCells;
 
@@ -29,8 +32,40 @@ public class ColoredCellGrid extends JPanel
 
     public void addPermenantCells(List<ColoredCell> cells)
     {
-        permenantCells_.addAll(cells);
+        for(ColoredCell cell: cells)
+            addPermenantCell(cell);
     }
+
+    public void clearAll()
+    {
+        permenantCells_.clear();
+        temporaryCells_.clear();
+    }
+
+    public void addPermenantCell(ColoredCell cell)
+    {
+        horizontalLines_[cell.getY()]++;
+        if(horizontalLines_[cell.getY()] < xCells_-1)
+            permenantCells_.add(cell);
+        else
+        {
+           for(int i = 0; i < permenantCells_.size(); i++)
+           {
+               ColoredCell tempCell = permenantCells_.get(i);
+               if(tempCell.getY() == cell.getY())
+                    permenantCells_.remove(i);
+           }
+           for(int i = 0; i < permenantCells_.size(); i++)
+           {
+               ColoredCell tempCell = permenantCells_.get(i);
+               if(tempCell.getY() < cell.getY())
+                   tempCell.setY(tempCell.getY()+1);
+           }
+           horizontalLines_[cell.getY()] = 0;
+        }
+
+    }
+
     public boolean contains(ColoredCell cell) 
     {
         return permenantCells_.contains(cell);

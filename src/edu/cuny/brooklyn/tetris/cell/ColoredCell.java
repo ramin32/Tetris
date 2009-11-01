@@ -5,8 +5,8 @@ import java.awt.Color;
 import java.awt.Point;
 
 public class ColoredCell {
-    private final int x_;
-    private final int y_;
+    private int x_;
+    private int y_;
     private final Color color_;
     
     public ColoredCell(int x, int y, Color color) {
@@ -25,6 +25,9 @@ public class ColoredCell {
 
     public int getY() {
         return y_;
+    }
+    public void setY(int y) {
+        y_ = y;
     }
 
     public Color getColor() {
