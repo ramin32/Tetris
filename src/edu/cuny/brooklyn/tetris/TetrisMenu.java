@@ -58,6 +58,7 @@ public class TetrisMenu extends JMenuBar implements ActionListener
 
     public void actionPerformed(ActionEvent e)
     {
+        board_.setPaused(true);
         if(e.getActionCommand() == EXIT_STRING)
             System.exit(1);
         else if(e.getActionCommand() == RESET_STRING)
@@ -65,6 +66,7 @@ public class TetrisMenu extends JMenuBar implements ActionListener
 
         else if(e.getActionCommand() == ABOUT_STRING)
             JOptionPane.showMessageDialog(null, ABOUT_MESSAGE);
+        board_.setPaused(false);
     }
 
 }

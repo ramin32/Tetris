@@ -4,32 +4,40 @@ import javax.swing.JPanel;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Point;
 import java.util.List;
 import java.util.ArrayList;
 import java.lang.IllegalArgumentException;
 
+import edu.cuny.brooklyn.tetris.shape.Shape;
+
 public class ColoredGrid extends JPanel 
 {
-    private Color[][] permenantCells_;
-    private Color[][] temporaryCells_;
-    private final int[] horizontalLines_;
+    public static final Point LEFT_CELL   = new Point(-1, 0);
+    public static final Point RIGHT_CELL  = new Point(+1, 0);
+    public static final Point TOP_CELL    = new Point(0, -1);
+    public static final Point BOTTOM_CELL = new Point(0, +1);
+
+    private Color[][] grid_;
+    private Shape temporaryShape_;
+    private int[] horizontalLines_;
     private int CELL_WIDTH = 15;
 
     private final int xCells_;
     private final int yCells_;
-    
+    private String message_;
+
     public ColoredGrid(int xCells, int yCells) 
     {
-        permenantCells_ = getNewGrid();
-        temporaryCells_ = getNewGrid();
+        grid_ = getNewGrid();
         horizontalLines_ = new int[yCells];
 
         xCells_ = xCells;
         yCells_ = yCells;
 
         setPreferredSize(new Dimension(xCells_ * CELL_WIDTH, 
-                                       yCells_ * CELL_WIDTH));
+                    yCells_ * CELL_WIDTH));
     }
 
     private final Color[][] getNewGrid()
@@ -37,22 +45,70 @@ public class ColoredGrid extends JPanel
         return new Color[xCells_][yCells_];
     }
 
-    public void addPermenantCells(Point[] points, Color color)
-    {
-        for(Point p: points)
-            permenantCells_[p.x][p.y] = color;
+    public void add(Point p, Color c)
+    { 
+        horizontalLines_[p.y]++;
+        if(horizontalLines_[p.y] < xCells_)
+            grid_[p.x][p.y] = c;
+        else
+        {
+            horizontalLines_[p.y] = 0;
+            for(int y = p.y; y > 0; y--)
+            {
+                for(int x = 0; x < xCells_; x++)
+                {
+                    if(grid_[x][y-1] != null)
+                    {
+                        horizontalLines_[y-1]--;
+                        horizontalLines_[y]++;
+                    }
+                    grid_[x][y] = grid_[x][y-1];
+                }
+            }
+            //Clear first row
+            horizontalLines_[0] = 0;
+            for(int x = 0; x < xCells_; x++)
+                grid_[x][0] = null;
+        }
+
     }
 
-    public void addTemporaryCells(Point[] points, Color color)
+    public void setMessage(String str)
     {
-        for(Point p: points)
-            temporaryCells_[p.x][p.y] = color;
+        message_ = str;
+    }
+    public void addShape(Shape shape)
+    {
+        for(Point p: shape.getPoints()){
+            add(p,shape.getColor());
+        }
+    }
+
+    public void setTemporaryShape(Shape shape)
+    {
+        temporaryShape_ = shape;
     }
 
     public void clearAll()
     {
-        permenantCells_ = getNewGrid();
-        temporaryCells_ = getNewGrid();
+        grid_ = getNewGrid();
+        temporaryShape_ = null;
+        horizontalLines_ = new int[yCells_];
+    }
+
+    public boolean collidesWith(Shape shape, Point point)
+    {
+        try
+        {
+            for(Point p: shape.getPoints())
+                if(grid_[p.x + point.x][p.y + point.y] != null)
+                    return true;
+        }
+        catch(ArrayIndexOutOfBoundsException e)
+        {
+            return true;
+        }
+        return false;
     }
 
     public int getCellWidth() 
@@ -72,34 +128,47 @@ public class ColoredGrid extends JPanel
         {
             for(int y = 0; y < yCells_; y++)
             {
-                if(permenantCells_[x][y] != null)
+                if(grid_[x][y] != null)
                 { 
-                    g.setColor(permenantCells_[x][y]);
-                    drawCell(g,x,y);
-                }
-                else if(temporaryCells_[x][y] != null)
-                { 
-                    g.setColor(temporaryCells_[x][y]);
+                    g.setColor(grid_[x][y]);
                     drawCell(g,x,y);
                 }
             }
         }
-        temporaryCells_ = getNewGrid();
+
+        // Flush temporaryShape
+        if(temporaryShape_ != null)
+        {
+            g.setColor(temporaryShape_.getColor());
+            for(Point p: temporaryShape_.getPoints())
+                drawCell(g, p.x, p.y);
+            temporaryShape_ = null;
+        }
+
+        // Flush message
+        if(message_ != null)
+        {
+            g.setFont(new Font("Arial", Font.BOLD, 20));
+            g.drawString(message_, getWidth()/4, getHeight()/2);
+            message_ = null;
+        }
     }
 
 
     public void drawCell(Graphics g, int x, int y)
     {
         g.fillRect(x * getCellWidth() + 2,
-                   y * getCellHeight() + 2,
-                   getCellWidth() - 4,
-                   getCellHeight() - 4);
+                y * getCellHeight() + 2,
+                getCellWidth() - 4,
+                getCellHeight() - 4);
 
+        Color previousColor = g.getColor();
         g.setColor(Color.BLACK);
         g.drawRect(x * getCellWidth() + 1,
-                   y * getCellHeight() + 1,
-                   getCellWidth() - 2,
-                   getCellHeight() - 2);
+                y * getCellHeight() + 1,
+                getCellWidth() - 2,
+                getCellHeight() - 2);
+        g.setColor(previousColor);
     }
 
 }

@@ -28,32 +28,41 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
     private final Timer timer_;
     private int xPosition_;
     private int yPosition_;
-    private int velocity_ = 1;
+    private final int velocity_ = 1;
 
     private Shape currentShape_;
     private Shape previousShape_;
 
     private ColoredGrid cellGrid_;
 
-
     public GameBoard()
     {
         frame_ = new JFrame("Tetris");
         frame_.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame_.setFocusable(true);
-        frame_.addKeyListener(this);
         frame_.setJMenuBar(new TetrisMenu(this));
 
         cellGrid_ = new ColoredGrid(X_CELLS, Y_CELLS);
         timer_ = new Timer(ANIMATION_RATE,this);
+        frame_.addKeyListener(this);
+
         resetGame();
 
+    }
+
+    public void setPaused(boolean b)
+    {
+        if(b)
+            timer_.stop();
+        else
+            timer_.restart();
     }
 
     final public void resetGame()
     {
         cellGrid_.clearAll();
         refreshState();
+        timer_.stop();
     }
     final private void refreshState() {
         currentShape_ = Shape.randomShape();
@@ -66,7 +75,6 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
         frame_.add(cellGrid_);
         frame_.pack();
         frame_.setVisible(true);
-
         timer_.start();
     }
 
@@ -76,17 +84,24 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
         yPosition_ += velocity_;
         Shape movedShape = currentShape_.move(xPosition_, yPosition_);
 
-        if(yPosition_ >= (Y_CELLS - currentShape_.getHeight()))
+        if(cellGrid_.collidesWith(movedShape, ColoredGrid.BOTTOM_CELL))
         {
-            cellGrid_.addPermenantCells(movedShape.getPoints(), 
-                                        movedShape.getColor());
-            refreshState();
+            if(yPosition_ < currentShape_.getHeight())
+            {
+                cellGrid_.setMessage("Nice Try!");
+                cellGrid_.repaint();
+                resetGame();
+                return;
+            }
+            else
+            {
+                cellGrid_.addShape(movedShape);
+                refreshState();
+            }
         }
-
         else
         {
-            cellGrid_.addTemporaryCells(movedShape.getPoints(), 
-                                        movedShape.getColor());
+            cellGrid_.setTemporaryShape(movedShape);
         }
 
         previousShape_ = movedShape;
@@ -96,15 +111,17 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
 
     public void keyPressed(KeyEvent e)
     {	
-        if(e.getKeyCode() == KeyEvent.VK_LEFT &&
-                xPosition_ > 0) {
-            xPosition_ -= 1;
-            velocity_ = 0;
+        timer_.restart();
+
+        if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+            Shape movedShape = currentShape_.move(xPosition_, yPosition_);
+            if(!cellGrid_.collidesWith(movedShape, ColoredGrid.LEFT_CELL))
+                xPosition_--;
         }
-        else if(e.getKeyCode() == KeyEvent.VK_RIGHT && 
-                xPosition_ < X_CELLS - currentShape_.getWidth()) {
-            xPosition_ += 1;
-            velocity_ = 0;
+        else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            Shape movedShape = currentShape_.move(xPosition_, yPosition_);
+            if(!cellGrid_.collidesWith(movedShape, ColoredGrid.RIGHT_CELL))
+                xPosition_++;
         }
         else if(e.getKeyCode() == KeyEvent.VK_UP)
             currentShape_.rotate();
@@ -112,11 +129,6 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
             actionPerformed(null);
         }
     }
-    public void keyReleased(KeyEvent e)
-    {
-        if(e.getKeyCode() == KeyEvent.VK_LEFT || 
-                e.getKeyCode() == KeyEvent.VK_RIGHT)
-            velocity_ = 1;
-    }
+    public void keyReleased(KeyEvent e){}
     public void keyTyped(KeyEvent e){}
 }
