@@ -15,25 +15,26 @@ import java.util.List;
 import java.awt.Point;
 
 import edu.cuny.brooklyn.tetris.shape.Shape;
-import edu.cuny.brooklyn.tetris.cell.ColoredCellGrid;
-import edu.cuny.brooklyn.tetris.cell.ColoredCell;
+import edu.cuny.brooklyn.tetris.grid.ColoredGrid;
 import javax.swing.JOptionPane;
 
 public class GameBoard implements Runnable, ActionListener, KeyListener 
 {
-    private static final int ANIMATION_RATE = 150;
+    private static final int ANIMATION_RATE = 300;
     private static final int X_CELLS = 15;
     private static final int Y_CELLS = 20;
 
     private final JFrame frame_;
     private final Timer timer_;
-    private int xPosition;
-    private int yPosition;
-    private int velocity = 1;
-    private Shape currentShape_;
-    private ColoredCellGrid cellGrid_;
+    private int xPosition_;
+    private int yPosition_;
+    private int velocity_ = 1;
 
-    private List<ColoredCell> previousCellList_;
+    private Shape currentShape_;
+    private Shape previousShape_;
+
+    private ColoredGrid cellGrid_;
+
 
     public GameBoard()
     {
@@ -43,7 +44,7 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
         frame_.addKeyListener(this);
         frame_.setJMenuBar(new TetrisMenu(this));
 
-        cellGrid_ = new ColoredCellGrid(X_CELLS, Y_CELLS);
+        cellGrid_ = new ColoredGrid(X_CELLS, Y_CELLS);
         timer_ = new Timer(ANIMATION_RATE,this);
         resetGame();
 
@@ -56,8 +57,8 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
     }
     final private void refreshState() {
         currentShape_ = Shape.randomShape();
-        yPosition = 0;
-        xPosition = X_CELLS/2 - currentShape_.getWidth()/2;
+        yPosition_ = 0;
+        xPosition_ = X_CELLS/2 - currentShape_.getWidth()/2;
     }
 
     public void run()
@@ -72,54 +73,38 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
 
     public void actionPerformed(ActionEvent e)
     {
-        yPosition += velocity;
+        yPosition_ += velocity_;
+        Shape movedShape = currentShape_.move(xPosition_, yPosition_);
 
-        List<ColoredCell> cells = new ArrayList<ColoredCell>();
-        for(Point p: currentShape_.getPoints())
+        if(yPosition_ >= (Y_CELLS - currentShape_.getHeight()))
         {
-            int x = p.x + xPosition;
-            int y = p.y + yPosition;
-
-            ColoredCell cell = new ColoredCell(x,y,currentShape_.getColor());
-            if(cellGrid_.contains(cell) && previousCellList_ != null) {
-                if(cell.getY() <= Shape.SHAPE_GRID_SIZE)
-                {
-                    JOptionPane.showMessageDialog(null,"Nice Try!");
-                    resetGame();
-                    return;
-
-                }
-                cellGrid_.addPermenantCells(previousCellList_);
-                refreshState();
-                cellGrid_.repaint();
-                return;
-            }
-
-            cells.add(cell);
-        }
-        previousCellList_ = cells;
-        cellGrid_.addTemporaryCells(cells);
-        cellGrid_.repaint();
-
-        if(yPosition >= (Y_CELLS - currentShape_.getHeight()))
-        {
-            cellGrid_.addPermenantCells(cells);
+            cellGrid_.addPermenantCells(movedShape.getPoints(), 
+                                        movedShape.getColor());
             refreshState();
         }
+
+        else
+        {
+            cellGrid_.addTemporaryCells(movedShape.getPoints(), 
+                                        movedShape.getColor());
+        }
+
+        previousShape_ = movedShape;
+        cellGrid_.repaint();
     } 
 
 
     public void keyPressed(KeyEvent e)
     {	
         if(e.getKeyCode() == KeyEvent.VK_LEFT &&
-                xPosition > 0) {
-            xPosition -= 1;
-            velocity = 0;
+                xPosition_ > 0) {
+            xPosition_ -= 1;
+            velocity_ = 0;
         }
         else if(e.getKeyCode() == KeyEvent.VK_RIGHT && 
-                xPosition < X_CELLS - currentShape_.getWidth()) {
-            xPosition += 1;
-            velocity = 0;
+                xPosition_ < X_CELLS - currentShape_.getWidth()) {
+            xPosition_ += 1;
+            velocity_ = 0;
         }
         else if(e.getKeyCode() == KeyEvent.VK_UP)
             currentShape_.rotate();
@@ -131,7 +116,7 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
     {
         if(e.getKeyCode() == KeyEvent.VK_LEFT || 
                 e.getKeyCode() == KeyEvent.VK_RIGHT)
-            velocity = 1;
+            velocity_ = 1;
     }
     public void keyTyped(KeyEvent e){}
 }

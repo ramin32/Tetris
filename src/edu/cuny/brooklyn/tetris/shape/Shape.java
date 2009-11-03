@@ -28,6 +28,15 @@ public class Shape
                          randomColor());
     }
 
+    public Shape move(int x, int y)
+    {
+        Point[] newPoints = new Point[points_.length];
+        for(int i = 0; i < points_.length; i++)
+            newPoints[i] = new Point(points_[i].x + x, 
+                                     points_[i].y + y);
+        return new Shape(newPoints, color_);
+    }
+
     private static Color randomColor()
     {
         return new Color(random_.nextInt(256),
@@ -76,6 +85,15 @@ public class Shape
                 p.x = p.x-minX;
                 p.y = p.y-minY;
         }
+    }
+
+    public String toString()
+    {
+        String pointsStr = "";
+        for(Point p: points_)
+            pointsStr += p.toString() + "\n";
+
+        return pointsStr + "\n " + color_.toString();
     }
 
 
