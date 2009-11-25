@@ -2,6 +2,14 @@ package edu.cuny.brooklyn.tetris;
 
 import javax.swing.SwingUtilities;
 
+/**
+ * Main class that runs the Game through GameBoard
+ *
+ * @author Ramin Rakhamimov
+ * @author Jonathan Weinblatt
+ * @see GameBoard
+ */
+
 public class Tetris {
     public static void main(String... args) {
         SwingUtilities.invokeLater(new GameBoard());

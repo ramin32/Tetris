@@ -6,6 +6,7 @@
     <property name="build" location="build"/>
     <property name="dist" location="dist"/>
     <property name="lib" location="lib"/>
+    <property name="docs" location="docs"/>
 
     <target name="init" depends="clean">
         <mkdir dir="${build}"/>
@@ -23,7 +24,8 @@
             </manifest>
         </jar>
     </target>
-    <javadoc destdir="docs/api"
+    <javadoc destdir="${docs}"
+        classpath="build"
         doclet="org.jboss.apiviz.APIviz"
         docletpath="${lib}/apiviz-1.3.0.GA.jar">
         <packageset dir="src" defaultexcludes="yes">

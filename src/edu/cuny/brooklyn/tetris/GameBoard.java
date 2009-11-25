@@ -18,6 +18,18 @@ import edu.cuny.brooklyn.tetris.shape.Shape;
 import edu.cuny.brooklyn.tetris.grid.ColoredGrid;
 import javax.swing.JOptionPane;
 
+/**
+ * Actual gameboard that contains a ColoredGrid and different
+ * listeners to handle events. This class runs the actual game
+ * executing user events and updates the ColoredGrid. It also 
+ * sets messages for the user upon game over.
+ *
+ * @author Ramin Rakhamimov
+ * @author Jonathan Weinblatt
+ * @see Shape
+ * @see ColoredGrid
+ */
+
 public class GameBoard implements Runnable, ActionListener, KeyListener 
 {
     private static final int ANIMATION_RATE = 300;
@@ -35,6 +47,9 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
 
     private ColoredGrid cellGrid_;
 
+    /**
+     * Constructs a GameBoard
+     */
     public GameBoard()
     {
         frame_ = new JFrame("Tetris");
@@ -50,6 +65,9 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
 
     }
 
+    /**
+     * Sets the game's paused state.
+     */
     public void setPaused(boolean b)
     {
         if(b)
@@ -58,18 +76,25 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
             timer_.restart();
     }
 
+    /**
+     * Resets all states of the game.
+     */
     final public void resetGame()
     {
         cellGrid_.clearAll();
         refreshState();
         timer_.stop();
     }
+
     final private void refreshState() {
         currentShape_ = Shape.randomShape();
         yPosition_ = 0;
         xPosition_ = X_CELLS/2 - currentShape_.getWidth()/2;
     }
 
+    /**
+     * Runs the game.
+     */
     public void run()
     {
         frame_.add(cellGrid_);
@@ -78,7 +103,9 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
         timer_.start();
     }
 
-
+    /**
+     * Updates game state on each timer iteration.
+     */
     public void actionPerformed(ActionEvent e)
     {
         yPosition_ += velocity_;
@@ -109,6 +136,10 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
     } 
 
 
+    /**
+     * Handles user key presses, shifts and rotations.
+     * @param e KeyEvent type
+     */
     public void keyPressed(KeyEvent e)
     {	
         timer_.restart();
@@ -129,6 +160,7 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
             actionPerformed(null);
         }
     }
+
     public void keyReleased(KeyEvent e){}
     public void keyTyped(KeyEvent e){}
 }

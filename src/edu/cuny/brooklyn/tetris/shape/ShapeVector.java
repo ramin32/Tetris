@@ -2,6 +2,14 @@ package edu.cuny.brooklyn.tetris.shape;
 
 import java.awt.Point;
 
+/**
+ * Contains constant shape vectors.
+ *
+ * @author Ramin Rakhamimov
+ * @author Jonathan Weinblatt
+ * @see Shape
+ */
+
 public interface ShapeVector {
 
     Point[] LINE = { 
@@ -39,5 +47,8 @@ public interface ShapeVector {
         new Point(2,1) 
     };
 
+    /**
+     * An array of all the shape vectors in this class.
+     */
     Point[][] VECTORS = {T, L, LINE, ZIG_ZAG, SQUARE};
 }

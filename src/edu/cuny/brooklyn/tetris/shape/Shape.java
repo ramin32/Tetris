@@ -8,6 +8,13 @@ import java.util.Random;
 
 import edu.cuny.brooklyn.tetris.GameBoard;
 
+/**
+ * Data structure that contains a vector of cells to form a shape.
+ *
+ * @author Ramin Rakhamimov
+ * @author Jonathan Weinblatt
+ */
+
 public class Shape 
 {
     public static final int SHAPE_GRID_SIZE = 4;
@@ -16,18 +23,31 @@ public class Shape
     private Point[] points_;
     private Color color_;
 
+    /**
+     * Constructs a shape object given a points vector and a color.
+     * @param points points vector
+     * @param color color for each point
+     */
     public Shape(Point[] points, Color color) 
     {
         points_ = points;
         color_ = color;
     }
 
+    /**
+     * Generates a random shape.
+     */
     public static Shape randomShape() 
     {
         return new Shape(ShapeVector.VECTORS[random_.nextInt(ShapeVector.VECTORS.length)],
                          randomColor());
     }
 
+    /**
+     * moves the shape to point (x,y)
+     * @param x 
+     * @param y
+     */
     public Shape move(int x, int y)
     {
         Point[] newPoints = new Point[points_.length];
@@ -37,6 +57,9 @@ public class Shape
         return new Shape(newPoints, color_);
     }
 
+    /**
+     * Generates a random color.
+     */
     private static Color randomColor()
     {
         return new Color(random_.nextInt(256),
@@ -44,6 +67,9 @@ public class Shape
                 random_.nextInt(256));
     }
     
+    /**
+     * Return width.
+     */
     public int getWidth()
     {
         int width = 0;
@@ -52,6 +78,9 @@ public class Shape
         return width + 1;
     }
 
+    /**
+     * Return width.
+     */
     public int getHeight()
     {
         int height = 0;
@@ -60,16 +89,25 @@ public class Shape
         return  height + 1;
     }
 
+    /**
+     * Return the points vector.
+     */
     public Point[] getPoints()
     {
         return points_;
     }
 
+    /**
+     * Return the color of the shape.
+     */
     public Color getColor()
     {
         return color_;
     }
 
+    /** 
+     * Rotate the shape in a clockwise direction by 90 degrees.
+     */
     public void rotate()
     {
         int minX = SHAPE_GRID_SIZE;
@@ -87,6 +125,9 @@ public class Shape
         }
     }
 
+    /**
+     * Return a pretty string of the shape.
+     */
     public String toString()
     {
         String pointsStr = "";

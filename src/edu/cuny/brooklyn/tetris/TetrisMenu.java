@@ -7,6 +7,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JOptionPane;
 
+/**
+ * Menu for the game.
+ *
+ * @author Ramin Rakhamimov
+ * @author Jonathan Weinblatt
+ */
 
 public class TetrisMenu extends JMenuBar implements ActionListener
 {
@@ -21,6 +27,9 @@ public class TetrisMenu extends JMenuBar implements ActionListener
 
     private final GameBoard board_;
 
+    /**
+     * Constructs a menu based on a gameboard.
+     */
     public TetrisMenu(GameBoard board)
     {
         board_ = board;
@@ -56,6 +65,9 @@ public class TetrisMenu extends JMenuBar implements ActionListener
     }
 
 
+    /**
+     * Handles events
+     */
     public void actionPerformed(ActionEvent e)
     {
         board_.setPaused(true);
