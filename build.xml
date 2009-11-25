@@ -2,37 +2,45 @@
     <description>
         A simple Tetris clone.
     </description>
-  <property name="src" location="src"/>
-  <property name="build" location="build"/>
-  <property name="dist" location="dist"/>
+    <property name="src" location="src"/>
+    <property name="build" location="build"/>
+    <property name="dist" location="dist"/>
+    <property name="lib" location="lib"/>
 
-  <target name="init" depends="clean">
-    <mkdir dir="${build}"/>
-    <mkdir dir="${dist}"/>
-  </target>
+    <target name="init" depends="clean">
+        <mkdir dir="${build}"/>
+        <mkdir dir="${dist}"/>
+    </target>
 
-  <target name="compile" depends="init">
-      <javac srcdir="${src}" destdir="${build}"/> 
-  </target>
+    <target name="compile" depends="init">
+        <javac srcdir="${src}" destdir="${build}"/> 
+    </target>
 
-  <target name="dist" depends="compile">
-    <jar jarfile="${dist}/${ant.project.name}.jar" basedir="${build}">
-        <manifest>
-            <attribute name="Main-Class" value="edu.cuny.brooklyn.tetris.Tetris"/>
-        </manifest>
-    </jar>
-  </target>
-  
-  <target name="run" depends="dist" description="Runs executable jar file.">
+    <target name="dist" depends="compile">
+        <jar jarfile="${dist}/${ant.project.name}.jar" basedir="${build}">
+            <manifest>
+                <attribute name="Main-Class" value="edu.cuny.brooklyn.tetris.Tetris"/>
+            </manifest>
+        </jar>
+    </target>
+    <javadoc destdir="docs/api"
+        doclet="org.jboss.apiviz.APIviz"
+        docletpath="${lib}/apiviz-1.3.0.GA.jar">
+        <packageset dir="src" defaultexcludes="yes">
+            <include name="**"/>
+        </packageset>
+    </javadoc>
+
+    <target name="run" depends="dist" description="Runs executable jar file.">
         <java jar="${dist}/${ant.project.name}.jar" fork="true"/>
-  </target>
+    </target>
 
 
 
-  <target name="clean">
-    <delete dir="${build}"/>
-    <delete dir="${dist}"/>
-  </target>
+    <target name="clean">
+        <delete dir="${build}"/>
+        <delete dir="${dist}"/>
+    </target>
 
 </project>
 
