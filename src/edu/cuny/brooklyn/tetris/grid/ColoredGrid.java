@@ -71,29 +71,50 @@ public class ColoredGrid extends JPanel
     public void add(Point p, Color c)
     { 
         horizontalLines_[p.y]++;
-        if(horizontalLines_[p.y] < xCells_)
-            grid_[p.x][p.y] = c;
-        else
+        grid_[p.x][p.y] = c;
+
+    }
+    
+    public void delete(Point p)
+    {
+        horizontalLines_[p.y]--;
+        grid_[p.x][p.y] = null;
+    }
+
+    private final void clearFullLines()
+    {
+        for(int y = yCells_ - 1; y >= 0; y--)
         {
-            horizontalLines_[p.y] = 0;
-            for(int y = p.y; y > 0; y--)
+            if(horizontalLines_[y] >= xCells_)
             {
-                for(int x = 0; x < xCells_; x++)
+                clearHorizontalLine(y);
+                enforceGravity();
+                clearFullLines();
+            }
+        }
+    }
+
+    private final void clearHorizontalLine(int line)
+    {
+        horizontalLines_[line] = 0;
+        for(int x = 0; x < xCells_; x++)
+            grid_[x][line] = null;
+    }
+
+    private final void enforceGravity()
+    {
+        for(int y = yCells_ - 2; y >= 0; y--)
+        {
+            for(int x = 0; x < xCells_; x++)
+            {
+                int oneDown = y + 1;
+                if((grid_[x][y] != null) && (grid_[x][oneDown] == null))
                 {
-                    if(grid_[x][y-1] != null)
-                    {
-                        horizontalLines_[y-1]--;
-                        horizontalLines_[y]++;
-                    }
-                    grid_[x][y] = grid_[x][y-1];
+                    add(new Point(x, oneDown), grid_[x][y]);
+                    delete(new Point(x, y));
                 }
             }
-            //Clear first row
-            horizontalLines_[0] = 0;
-            for(int x = 0; x < xCells_; x++)
-                grid_[x][0] = null;
         }
-
     }
 
     /**
@@ -115,6 +136,8 @@ public class ColoredGrid extends JPanel
         for(Point p: shape.getPoints()){
             add(p,shape.getColor());
         }
+
+        clearFullLines();
     }
 
 
@@ -182,7 +205,10 @@ public class ColoredGrid extends JPanel
      */
     public void paintComponent(Graphics g) 
     {
-        g.clearRect(0,0,getWidth(),getHeight());
+		Color prev = g.getColor();
+		g.setColor(Color.BLACK);
+        g.fillRect(0,0,getWidth(),getHeight());
+		g.setColor(prev);
         for(int x = 0; x < xCells_; x++)
         {
             for(int y = 0; y < yCells_; y++)
@@ -228,7 +254,7 @@ public class ColoredGrid extends JPanel
                 getCellHeight() - 4);
 
         Color previousColor = g.getColor();
-        g.setColor(Color.BLACK);
+        g.setColor(Color.WHITE);
         g.drawRect(x * getCellWidth() + 1,
                 y * getCellHeight() + 1,
                 getCellWidth() - 2,
