@@ -15,6 +15,7 @@ import java.util.List;
 import java.awt.Point;
 
 import edu.cuny.brooklyn.tetris.shape.Shape;
+import edu.cuny.brooklyn.tetris.Velocity;
 import edu.cuny.brooklyn.tetris.grid.ColoredGrid;
 import javax.swing.JOptionPane;
 
@@ -25,7 +26,6 @@ import javax.swing.JOptionPane;
  * sets messages for the user upon game over.
  *
  * @author Ramin Rakhamimov
- * @author Jonathan Weinblatt
  * @see Shape
  * @see ColoredGrid
  */
@@ -40,7 +40,7 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
     private final Timer timer_;
     private int xPosition_;
     private int yPosition_;
-    private final int velocity_ = 1;
+    private final Velocity velocity_;
 
     private Shape currentShape_;
     private Shape previousShape_;
@@ -61,6 +61,7 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
         timer_ = new Timer(ANIMATION_RATE,this);
         frame_.addKeyListener(this);
 
+        velocity_ = new Velocity(1);
         resetGame();
 
     }
@@ -84,6 +85,7 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
         cellGrid_.clearAll();
         refreshState();
         timer_.stop();
+        velocity_.setTemporaryVelocity(null);
     }
 
     final private void refreshState() {
@@ -108,10 +110,10 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
      */
     public void actionPerformed(ActionEvent e)
     {
-        yPosition_ += velocity_;
+        yPosition_ += velocity_.getVelocity();
         Shape movedShape = currentShape_.move(xPosition_, yPosition_);
 
-        if(cellGrid_.collidesWith(movedShape, ColoredGrid.BOTTOM_CELL))
+        if(cellGrid_.collidesWith(movedShape, ColoredGrid.BOTTOM_CELL)) 
         {
             if(yPosition_ < currentShape_.getHeight())
             {
@@ -133,6 +135,7 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
 
         previousShape_ = movedShape;
         cellGrid_.repaint();
+        velocity_.setTemporaryVelocity(null);
     } 
 
 
@@ -146,16 +149,25 @@ public class GameBoard implements Runnable, ActionListener, KeyListener
 
         if(e.getKeyCode() == KeyEvent.VK_LEFT) {
             Shape movedShape = currentShape_.move(xPosition_, yPosition_);
-            if(!cellGrid_.collidesWith(movedShape, ColoredGrid.LEFT_CELL))
+            if(!cellGrid_.collidesWith(movedShape, ColoredGrid.LEFT_CELL)){
                 xPosition_--;
+                velocity_.setTemporaryVelocity(0);
+                actionPerformed(null);
+            }
         }
         else if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
             Shape movedShape = currentShape_.move(xPosition_, yPosition_);
-            if(!cellGrid_.collidesWith(movedShape, ColoredGrid.RIGHT_CELL))
+            if(!cellGrid_.collidesWith(movedShape, ColoredGrid.RIGHT_CELL)){
                 xPosition_++;
+                velocity_.setTemporaryVelocity(0);
+                actionPerformed(null);
+            }
         }
-        else if(e.getKeyCode() == KeyEvent.VK_UP)
+        else if(e.getKeyCode() == KeyEvent.VK_UP){
             currentShape_.rotate();
+            velocity_.setTemporaryVelocity(0);
+            actionPerformed(null);
+        }
         else if(e.getKeyCode() == KeyEvent.VK_DOWN) {
             actionPerformed(null);
         }

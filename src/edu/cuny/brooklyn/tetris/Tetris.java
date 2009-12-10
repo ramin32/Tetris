@@ -6,7 +6,6 @@ import javax.swing.SwingUtilities;
  * Main class that runs the Game through GameBoard
  *
  * @author Ramin Rakhamimov
- * @author Jonathan Weinblatt
  * @see GameBoard
  */
 

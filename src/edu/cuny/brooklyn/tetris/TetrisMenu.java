@@ -11,7 +11,6 @@ import javax.swing.JOptionPane;
  * Menu for the game.
  *
  * @author Ramin Rakhamimov
- * @author Jonathan Weinblatt
  */
 
 public class TetrisMenu extends JMenuBar implements ActionListener

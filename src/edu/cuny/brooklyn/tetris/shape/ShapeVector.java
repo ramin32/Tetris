@@ -6,7 +6,6 @@ import java.awt.Point;
  * Contains constant shape vectors.
  *
  * @author Ramin Rakhamimov
- * @author Jonathan Weinblatt
  * @see Shape
  */
 

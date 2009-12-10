@@ -21,7 +21,6 @@ import edu.cuny.brooklyn.tetris.shape.Shape;
  * within the grid.
  *
  * @author Ramin Rakhamimov
- * @author Jonathan Weinblatt
  * @see Shape
  */
 
@@ -233,6 +232,7 @@ public class ColoredGrid extends JPanel
         // Flush message
         if(message_ != null)
         {
+            g.setColor(Color.WHITE); 
             g.setFont(new Font("Arial", Font.BOLD, 20));
             g.drawString(message_, getWidth()/4, getHeight()/2);
             message_ = null;
